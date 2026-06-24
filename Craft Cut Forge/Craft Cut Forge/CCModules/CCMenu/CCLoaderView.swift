@@ -2,20 +2,19 @@
 //  BPLoaderView.swift
 //  Craft Cut Forge
 //
-//  Created by Dias Atudinov on 24.06.2026.
 //
 
 
 import SwiftUI
 
-struct BPLoaderView: View {
+struct CCLoaderView: View {
     @State private var scale: CGFloat = 1.0
     @State private var progress: CGFloat = 0.0
     @State private var timer: Timer?
     var body: some View {
         ZStack {
             ZStack {
-                Image("loaderImageBP")
+                Image("loaderImageCC")
                     .resizable()
                     .ignoresSafeArea()
                     .scaledToFill()
@@ -26,7 +25,7 @@ struct BPLoaderView: View {
             
             VStack(spacing: 0) {
                 
-                Image("loaderImageBP")
+                Image("loaderImageCC")
                     .resizable()
                     .scaledToFit()
                     .frame(height: 200)
@@ -84,5 +83,5 @@ struct BPLoaderView: View {
 
 
 #Preview {
-    BPLoaderView()
+    CCLoaderView()
 }

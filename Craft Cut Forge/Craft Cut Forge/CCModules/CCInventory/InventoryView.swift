@@ -1,3 +1,12 @@
+//
+//  InventoryView.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
+import PhotosUI
+
 // MARK: - Inventory
 
 struct InventoryView: View {
@@ -118,8 +127,17 @@ struct MaterialCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(material.category.icon)
-                .font(.system(size: 38))
+            if let image = ProjectImageStorage.loadImage(fileName: material.imageFileName) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 60)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                Text(material.category.icon)
+                    .font(.system(size: 38))
+            }
 
             Spacer()
 
@@ -164,6 +182,9 @@ struct AddMaterialView: View {
     @State private var quantity = 1.0
     @State private var unit: MaterialUnit = .pcs
 
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var imageData: Data?
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -201,25 +222,55 @@ struct AddMaterialView: View {
                         }
                         .pickerStyle(.segmented)
 
-                        VStack(spacing: 8) {
-                            Image(systemName: "camera")
-                                .font(.title)
-                                .foregroundColor(AppTheme.grayText)
+                        inputTitle("Photo Optional")
 
-                            Text("Tap to add photo")
-                                .foregroundColor(AppTheme.grayText)
+                        PhotosPicker(
+                            selection: $selectedPhotoItem,
+                            matching: .images,
+                            photoLibrary: .shared()
+                        ) {
+                            if let imageData,
+                               let uiImage = UIImage(data: imageData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(height: 160)
+                                    .frame(maxWidth: .infinity)
+                                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                            } else {
+                                VStack(spacing: 10) {
+                                    Image(systemName: "camera")
+                                        .font(.title)
+                                        .foregroundColor(AppTheme.grayText)
+
+                                    Text("Tap to add photo")
+                                        .foregroundColor(AppTheme.grayText)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 160)
+                                .background(AppTheme.card)
+                                .clipShape(RoundedRectangle(cornerRadius: 18))
+                            }
                         }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 130)
-                        .background(AppTheme.card)
-                        .clipShape(RoundedRectangle(cornerRadius: 18))
+                        .onChange(of: selectedPhotoItem) { newItem in
+                            Task {
+                                guard let data = try? await newItem?.loadTransferable(type: Data.self) else {
+                                    return
+                                }
+
+                                await MainActor.run {
+                                    imageData = data
+                                }
+                            }
+                        }
 
                         Button {
                             store.addMaterial(
                                 name: name,
                                 category: category,
                                 quantity: quantity,
-                                unit: unit
+                                unit: unit,
+                                imageData: imageData
                             )
                             dismiss()
                         } label: {
@@ -328,4 +379,10 @@ struct MaterialReminderView: View {
             .padding()
         }
     }
+}
+
+#Preview {
+    RootView()
+        .environmentObject(WorkshopStore())
+    
 }

@@ -1,3 +1,11 @@
+//
+//  CraftHubView.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
+
 // MARK: - Craft Hub
 
 struct CraftHubView: View {
