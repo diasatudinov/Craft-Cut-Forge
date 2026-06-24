@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "loaderImageCC.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
