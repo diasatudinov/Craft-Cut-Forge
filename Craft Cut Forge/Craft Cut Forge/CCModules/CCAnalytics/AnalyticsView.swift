@@ -1,3 +1,11 @@
+//
+//  AnalyticsView.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
+
 // MARK: - Analytics
 
 struct AnalyticsView: View {

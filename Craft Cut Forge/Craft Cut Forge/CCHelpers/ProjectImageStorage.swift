@@ -1,3 +1,11 @@
+//
+//  ProjectImageStorage.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
+
 enum ProjectImageStorage {
     static func saveImageData(_ data: Data) -> String? {
         let fileName = UUID().uuidString + ".jpg"

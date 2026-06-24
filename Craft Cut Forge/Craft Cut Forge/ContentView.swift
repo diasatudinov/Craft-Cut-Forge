@@ -2,7 +2,6 @@
 //  ContentView.swift
 //  Craft Cut Forge
 //
-//  Created by Dias Atudinov on 22.06.2026.
 //
 
 import SwiftUI

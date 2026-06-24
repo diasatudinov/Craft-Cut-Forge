@@ -1,3 +1,13 @@
+//
+//  CraftGameView.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
+import SpriteKit
+import UIKit
+
 
 // MARK: - Craft Game View
 
