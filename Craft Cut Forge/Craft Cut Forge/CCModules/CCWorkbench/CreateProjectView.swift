@@ -1,3 +1,10 @@
+//
+//  CreateProjectView.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
 import PhotosUI
 // MARK: - Create Project
 
@@ -50,23 +57,10 @@ struct CreateProjectView: View {
                                         .frame(maxWidth: .infinity)
                                         .clipShape(RoundedRectangle(cornerRadius: 18))
                                 } else {
-                                    VStack(spacing: 12) {
-                                        Image(systemName: "photo.on.rectangle.angled")
-                                            .font(.system(size: 34))
-                                            .foregroundColor(AppTheme.yellow)
-
-                                        Text("Add a Cover Photo")
-                                            .font(.headline)
-                                            .foregroundColor(.white)
-
-                                        Text("This image will be shown on your project card.")
-                                            .font(.caption)
-                                            .foregroundColor(AppTheme.grayText)
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 180)
-                                    .background(AppTheme.card)
-                                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                                    Image(.placeholderCoverPhotoCC)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 180)
                                 }
                             }
                             .onChange(of: selectedPhotoItem) { newItem in
@@ -289,4 +283,9 @@ struct CreateProjectView: View {
             content()
         }
     }
+}
+
+#Preview {
+    CreateProjectView()
+        .environmentObject(WorkshopStore())
 }

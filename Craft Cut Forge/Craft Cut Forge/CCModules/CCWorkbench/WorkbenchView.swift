@@ -1,3 +1,11 @@
+//
+//  WorkbenchView.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
+
 // MARK: - Workbench
 
 struct WorkbenchView: View {
@@ -22,7 +30,7 @@ struct WorkbenchView: View {
                                 } label: {
                                     ProjectCard(project: project)
                                 }
-                                .buttonStyle(.plain)
+                               
                             }
                         }
                     }
@@ -53,6 +61,12 @@ struct WorkbenchView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 12) {
+            
+            Image(.workbenchIconCC)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 45)
+                .frame(maxWidth: .infinity, alignment: .leading)
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Workbench")
@@ -60,7 +74,7 @@ struct WorkbenchView: View {
                         .foregroundColor(.white)
 
                     Text("\(store.projects.filter { !$0.isCompleted }.count) active projects")
-                        .foregroundColor(AppTheme.grayText)
+                        .foregroundColor(.textColor1)
                 }
 
                 Spacer()
@@ -72,13 +86,53 @@ struct WorkbenchView: View {
                     .padding(.vertical, 8)
                     .background(AppTheme.card2)
                     .clipShape(Capsule())
+                
+                Image(.workbenchIcon2CC)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 35)
             }
 
             HStack(spacing: 12) {
-                StatMiniCard(title: "Active", value: "\(store.projects.filter { !$0.isCompleted }.count)")
-                StatMiniCard(title: "Complete", value: "\(store.completedProjectsCount())")
-                StatMiniCard(title: "Accuracy", value: "\(Int(store.perfectAccuracy() * 100))%")
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Projects")
+                        .font(.caption)
+                        .foregroundColor(AppTheme.grayText)
+                    
+                    Text("\(store.completedProjectsCount())")
+                        .font(.title2.bold())
+                        .foregroundColor(.appYellow)
+                    
+                    
+                }.frame(maxWidth: .infinity)
+                
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Stages")
+                        .font(.caption)
+                        .foregroundColor(AppTheme.grayText)
+                    
+                    Text("\(store.completedStagesCount())")
+                        .font(.title2.bold())
+                        .foregroundColor(.textColor2)
+                   
+                }.frame(maxWidth: .infinity)
+                
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("XP")
+                        .font(.caption)
+                        .foregroundColor(AppTheme.grayText)
+                    
+                    Text("\(store.xp)")
+                        .font(.title2.bold())
+                        .foregroundColor(.textColor2)
+                    
+                   
+                }.frame(maxWidth: .infinity)
             }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(AppTheme.card)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
     }
 }
@@ -88,24 +142,22 @@ struct EmptyWorkbenchView: View {
 
     var body: some View {
         VStack(spacing: 18) {
-            RoundedRectangle(cornerRadius: 18)
-                .fill(AppTheme.card)
-                .frame(height: 210)
-                .overlay {
-                    VStack(spacing: 12) {
-                        Text("🛠️")
-                            .font(.system(size: 50))
+            
+            Image(.placeholderWorkbenchEmptyCC)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 280)
+            
+            VStack(spacing: 12) {
+                Text("No Projects Yet")
+                    .font(.title2.bold())
+                    .foregroundColor(.white)
 
-                        Text("No Projects Yet")
-                            .font(.title2.bold())
-                            .foregroundColor(.white)
-
-                        Text("Create your first DIY project and start building.")
-                            .multilineTextAlignment(.center)
-                            .foregroundColor(AppTheme.grayText)
-                    }
-                    .padding()
-                }
+                Text("Create your first DIY project and start building.")
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(AppTheme.grayText)
+            }
+            .padding()
 
             Text("Start with a simple pallet project and earn your first 50 XP.")
                 .font(.callout)
@@ -126,6 +178,23 @@ struct ProjectCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
+            
+            if let image = ProjectImageStorage.loadImage(fileName: project.coverImageFileName) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 150)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            } else {
+                Image(.placeholderCardCoverPhotoCC)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 150)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            }
+            
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(project.isCompleted ? "COMPLETED" : "IN PROGRESS")
@@ -138,45 +207,23 @@ struct ProjectCard: View {
 
                     Text("\(project.category) • \(project.stages.count) stages")
                         .font(.caption)
-                        .foregroundColor(AppTheme.grayText)
+                        .foregroundColor(.white)
                 }
 
                 Spacer()
 
                 ProgressRing(
                     progress: project.progress,
-                    color: project.isCompleted ? AppTheme.green : AppTheme.yellow,
+                    color: project.isCompleted ? .green : .appYellow,
                     size: 58
                 )
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(project.stages.prefix(3)) { stage in
-                    HStack {
-                        Image(systemName: stage.isCompleted ? "checkmark.circle.fill" : "circle")
-                            .foregroundColor(stage.isCompleted ? AppTheme.green : AppTheme.grayText)
-
-                        Text(stage.title)
-                            .foregroundColor(.white.opacity(stage.isCompleted ? 0.45 : 0.95))
-                            .strikethrough(stage.isCompleted)
-
-                        Spacer()
-
-                        if stage.isCompleted {
-                            Text(stage.wasPerfectDrop == true ? "+\(stage.xpEarned) XP" : "Done")
-                                .font(.caption.bold())
-                                .foregroundColor(stage.wasPerfectDrop == true ? AppTheme.yellow : AppTheme.green)
-                        }
-                    }
-                    .font(.subheadline)
-                }
             }
 
             HStack {
                 ForEach(project.materials.prefix(3)) { material in
                     Text(material.title)
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.75))
+                        .foregroundColor(.white)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
                         .background(Color.white.opacity(0.08))
@@ -219,7 +266,7 @@ struct ProjectCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .overlay {
             RoundedRectangle(cornerRadius: 22)
-                .stroke(project.isCompleted ? AppTheme.green.opacity(0.35) : AppTheme.yellow.opacity(0.15), lineWidth: 1)
+                .stroke(project.isCompleted ? AppTheme.green.opacity(0.35) : AppTheme.yellow.opacity(0.15), lineWidth: 2)
         }
         .fullScreenCover(item: $route) { route in
             CraftGameView(route: route)
@@ -246,6 +293,23 @@ struct ProjectDetailView: View {
             if let project {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 22) {
+                        
+                        if let image = ProjectImageStorage.loadImage(fileName: project.coverImageFileName) {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 220)
+                                .frame(maxWidth: .infinity)
+                                .clipShape(RoundedRectangle(cornerRadius: 22))
+                        } else {
+                            Image(.placeholderCardCoverPhotoCC)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 220)
+                                .frame(maxWidth: .infinity)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                        }
+                        
                         HStack {
                             ProgressRing(
                                 progress: project.progress,
@@ -343,7 +407,6 @@ struct ProjectDetailView: View {
                 }
             }
         }
-        .navigationTitle("Project")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(item: $route) { route in
             CraftGameView(route: route)
@@ -370,4 +433,10 @@ struct ProjectDetailView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 18))
         }
     }
+}
+
+#Preview {
+    RootView()
+        .environmentObject(WorkshopStore())
+    
 }

@@ -1,3 +1,11 @@
+//
+//  WorkshopStore.swift
+//  Craft Cut Forge
+//
+//
+
+import SwiftUI
+
 // MARK: - Store
 
 @MainActor
@@ -11,7 +19,7 @@ final class WorkshopStore: ObservableObject {
     @Published private(set) var purchasedShopItemIDs: Set<String> = []
     @Published private(set) var xpLogs: [XPLog] = []
 
-    private let storageKey = "craft_cut_forge_storage_v1_test"
+    private let storageKey = "craft_cut_forge_storage_v2"
 
     var shopItems: [ShopItem] {
         [
@@ -265,58 +273,6 @@ final class WorkshopStore: ObservableObject {
         }
     }
 
-    private func seedDemoData() {
-        let oldDate = Calendar.current.date(byAdding: .day, value: -378, to: Date()) ?? Date()
-
-        let pallets = InventoryMaterial(
-            name: "Pallets",
-            category: .wood,
-            quantity: 2,
-            unit: .pcs,
-            imageFileName: nil,
-            createdAt: oldDate
-        )
-
-        let bottles = InventoryMaterial(
-            name: "Glass Bottles",
-            category: .other,
-            quantity: 12,
-            unit: .pcs,
-            imageFileName: nil
-        )
-
-        let screws = InventoryMaterial(
-            name: "Screws 35mm",
-            category: .fasteners,
-            quantity: 40,
-            unit: .pcs,
-            imageFileName: nil
-        )
-
-        let steel = InventoryMaterial(
-            name: "Steel Sheet",
-            category: .metal,
-            quantity: 5,
-            unit: .pcs,
-            imageFileName: nil
-        )
-
-        materials = [pallets, bottles, screws, steel]
-
-        xp = 420
-        perfectDrops = 5
-        missedDrops = 1
-        purchasedShopItemIDs = ["classic_wood", "hemp_rope", "dust", "carpenter"]
-
-        xpLogs = [
-            XPLog(date: Date(), amount: 50),
-            XPLog(date: Calendar.current.date(byAdding: .day, value: -1, to: Date()) ?? Date(), amount: 50),
-            XPLog(date: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(), amount: 100),
-            XPLog(date: Calendar.current.date(byAdding: .day, value: -4, to: Date()) ?? Date(), amount: 50),
-            XPLog(date: Calendar.current.date(byAdding: .day, value: -5, to: Date()) ?? Date(), amount: 100)
-        ]
-    }
-
     private func save() {
         let payload = PersistencePayload(
             projects: projects,
@@ -337,8 +293,6 @@ final class WorkshopStore: ObservableObject {
             let data = UserDefaults.standard.data(forKey: storageKey),
             let payload = try? JSONDecoder().decode(PersistencePayload.self, from: data)
         else {
-            seedDemoData()
-            save()
             return
         }
 
